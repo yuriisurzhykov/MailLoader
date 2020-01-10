@@ -2,37 +2,11 @@
 using System.Windows.Forms;
 using System.IO;
 
-public namespace SpecialClasses
+namespace SpecialClasses
 {
     public class FileWorker
     {
         private string path;
-
-        public FileWorker(string path)
-        {
-            this.path = path;
-            try
-            {
-                fileWorker = new FileWorker(path);
-            }
-            catch (FileNotFoundException ex)
-            {
-                File.AppendText(@"C:\ProgramFiles\Errors.txt").Write("\n" + ex.Message);
-            }
-        }
-
-        public List<string> readFromFile()
-        {
-            try
-            {
-                vs.AddRange(File.ReadAllLines(path));
-            }
-            catch(FileNotFoundException ex)
-            {
-                File.AppendText(@"C:\ProgramFiles\Errors.txt").Write("\n" + ex.Message);
-            }
-            return vs;
-        }
 
         public static List<string> ReadFromFile(string fileName)
         {
