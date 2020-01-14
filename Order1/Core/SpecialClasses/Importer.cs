@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Npgsql;
 
-namespace SpecialClasses
+namespace Core.SpecialClasses
 {
     /*
      * Разделить программу на классы: импортер и экспортер. 

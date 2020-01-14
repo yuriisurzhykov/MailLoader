@@ -2,14 +2,14 @@
 using System.Windows.Forms;
 using System.IO;
 using Npgsql;
+using Core.SSH;
+using Order1.Forms;
 
 namespace Order1
 {
     static class Program
     {
         public static string connectionString = "Server=188.127.231.217;User Id=postgres;Password=kjLKnklKJH8768;Database=root;";
-        private static string server = "Server=localhost;";
-        private static string user = "User Id=postgres;";
 
         private static string[] password_database = new string[4];
         /// <summary>
@@ -23,7 +23,7 @@ namespace Order1
             CreateConnectionString();
         }
 
-        private static void CreateConnectionString()
+        public static void CreateConnectionString()
         {
             try
             {

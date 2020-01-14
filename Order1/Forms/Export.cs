@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 using Npgsql;
-using SpecialClasses;
+using Core.SpecialClasses;
 
 namespace Order1
 {
