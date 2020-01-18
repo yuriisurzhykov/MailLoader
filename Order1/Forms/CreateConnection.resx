@@ -126,16 +126,16 @@
     <value>Arial Narrow, 12pt</value>
   </data>
   <data name="label1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>123, 192</value>
+    <value>68, 192</value>
   </data>
   <data name="label1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>114, 20</value>
+    <value>226, 20</value>
   </data>
   <data name="label1.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
   </data>
   <data name="label1.Text" xml:space="preserve">
-    <value>Введите пароль:</value>
+    <value>Введите пароль пользователя БД:</value>
   </data>
   <data name="&gt;&gt;label1.Name" xml:space="preserve">
     <value>label1</value>
@@ -160,7 +160,7 @@
     <value>NoControl</value>
   </data>
   <data name="label2.Location" type="System.Drawing.Point, System.Drawing">
-    <value>68, 278</value>
+    <value>74, 278</value>
   </data>
   <data name="label2.Size" type="System.Drawing.Size, System.Drawing">
     <value>210, 20</value>
@@ -292,16 +292,16 @@
     <value>NoControl</value>
   </data>
   <data name="label3.Location" type="System.Drawing.Point, System.Drawing">
-    <value>79, 107</value>
+    <value>74, 107</value>
   </data>
   <data name="label3.Size" type="System.Drawing.Size, System.Drawing">
-    <value>182, 20</value>
+    <value>204, 20</value>
   </data>
   <data name="label3.TabIndex" type="System.Int32, mscorlib">
     <value>5</value>
   </data>
   <data name="label3.Text" xml:space="preserve">
-    <value>Введите имя пользователя:</value>
+    <value>Введите имя пользователя БД:</value>
   </data>
   <data name="&gt;&gt;label3.Name" xml:space="preserve">
     <value>label3</value>

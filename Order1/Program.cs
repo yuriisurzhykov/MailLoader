@@ -2,14 +2,14 @@
 using System.Windows.Forms;
 using System.IO;
 using Npgsql;
+using Core.SSH;
+using Order1.Forms;
 
 namespace Order1
 {
     static class Program
     {
         public static string connectionString = "Server=188.127.231.217;User Id=postgres;Password=kjLKnklKJH8768;Database=root;";
-        private static string server = "Server=localhost;";
-        private static string user = "User Id=postgres;";
 
         private static string[] password_database = new string[4];
         /// <summary>
@@ -23,7 +23,7 @@ namespace Order1
             CreateConnectionString();
         }
 
-        private static void CreateConnectionString()
+        public static void CreateConnectionString()
         {
             try
             {
@@ -68,14 +68,33 @@ namespace Order1
                                    "Database=" + database + ";";
                 Console.WriteLine(connectionString);
                 //Пробуем подключиться к БД
-                NpgsqlConnection conn = new NpgsqlConnection(connectionString);
-                conn.Open();
-                conn.Close();
-                FileStream fs = new FileStream(Environment.SpecialFolder.ApplicationData + "conn.txt", FileMode.Create);
-                fs.Close();
-                // Записываем в файл настройки для подключения к БД
-                File.WriteAllLines(Environment.SpecialFolder.ApplicationData + "conn.txt", 
-                                   new string[] { server, user_id, password, database});
+                try
+                {
+                    NpgsqlConnection conn = new NpgsqlConnection(connectionString);
+                    conn.Open();
+                    conn.Close();
+                    FileStream fs = new FileStream(Environment.SpecialFolder.ApplicationData + "conn.txt", FileMode.Create);
+                    fs.Close();
+                    // Записываем в файл настройки для подключения к БД
+                    File.WriteAllLines(Environment.SpecialFolder.ApplicationData + "conn.txt",
+                                       new string[] { server, user_id, password, database });
+                }
+                catch(System.Net.Sockets.SocketException)
+                {
+                    MessageBox.Show("Время ожидания подключения к серверу истекло\n" +
+                                    "Проверьте соединение с интернетом и повторите запуск приложения!",
+                                    "Время ожидания истекло",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Warning);
+                }
+                catch (TimeoutException)
+                {
+                    MessageBox.Show("Время ожидания подключения к серверу истекло\n" +
+                                    "Проверьте соединение с интернетом и повторите запуск приложения!", 
+                                    "Время ожидания истекло", 
+                                    MessageBoxButtons.OK, 
+                                    MessageBoxIcon.Warning);
+                }
                 return true;
             }
             catch(PostgresException) // Если что-то пошло не так, значит неправильно 

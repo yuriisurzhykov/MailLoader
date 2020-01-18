@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 using System.IO;
 
-namespace SpecialClasses
+namespace Core.SpecialClasses
 {
     public class FileWorker
     {

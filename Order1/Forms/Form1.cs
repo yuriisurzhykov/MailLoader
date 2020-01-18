@@ -35,6 +35,10 @@ namespace Order1
                 NpgsqlConnection conn = new NpgsqlConnection(Program.connectionString);
                 conn.Open();
             }
+            catch(System.Net.Sockets.SocketException)
+            {
+                Application.Exit();
+            }
             catch(PostgresException)
             {
                 Program.connectionString = "Server=localhost;User Id=postgres;Password=;Database=Order_News;";
