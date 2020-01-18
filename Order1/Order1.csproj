@@ -73,6 +73,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\SpecialClasses\ListMails.cs" />
+    <Compile Include="Core\SpecialClasses\ListNews.cs" />
     <Compile Include="Core\SpecialClasses\SqlCommander.cs" />
     <Compile Include="Forms\Communication.cs">
       <SubType>Form</SubType>

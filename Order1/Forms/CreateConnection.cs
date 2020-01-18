@@ -37,5 +37,45 @@ namespace Order1
         {
 
         }
+
+        private void Label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void User_name_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Server_box_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Db_name_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Password_box_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Label1_Click_1(object sender, EventArgs e)
+        {
+
+        }
     }
 }

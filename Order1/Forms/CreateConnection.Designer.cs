@@ -44,21 +44,25 @@
             // 
             resources.ApplyResources(this.label1, "label1");
             this.label1.Name = "label1";
+            this.label1.Click += new System.EventHandler(this.Label1_Click_1);
             // 
             // label2
             // 
             resources.ApplyResources(this.label2, "label2");
             this.label2.Name = "label2";
+            this.label2.Click += new System.EventHandler(this.Label2_Click);
             // 
             // password_box
             // 
             resources.ApplyResources(this.password_box, "password_box");
             this.password_box.Name = "password_box";
+            this.password_box.TextChanged += new System.EventHandler(this.Password_box_TextChanged);
             // 
             // db_name
             // 
             resources.ApplyResources(this.db_name, "db_name");
             this.db_name.Name = "db_name";
+            this.db_name.TextChanged += new System.EventHandler(this.Db_name_TextChanged);
             // 
             // button1
             // 
@@ -71,21 +75,25 @@
             // 
             resources.ApplyResources(this.user_name, "user_name");
             this.user_name.Name = "user_name";
+            this.user_name.TextChanged += new System.EventHandler(this.User_name_TextChanged);
             // 
             // label3
             // 
             resources.ApplyResources(this.label3, "label3");
             this.label3.Name = "label3";
+            this.label3.Click += new System.EventHandler(this.Label3_Click);
             // 
             // server_box
             // 
             resources.ApplyResources(this.server_box, "server_box");
             this.server_box.Name = "server_box";
+            this.server_box.TextChanged += new System.EventHandler(this.Server_box_TextChanged);
             // 
             // label4
             // 
             resources.ApplyResources(this.label4, "label4");
             this.label4.Name = "label4";
+            this.label4.Click += new System.EventHandler(this.Label4_Click);
             // 
             // CreateConnection
             // 
