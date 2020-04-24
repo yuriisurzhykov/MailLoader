@@ -77,5 +77,10 @@ namespace Order1
         {
 
         }
+
+        private void CreateConnection_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

@@ -8,11 +8,14 @@ namespace Core.SpecialClasses
 {
     class ListNews
     {
+        public int CountNewsMails { get; set; }
+        public int CountNews { get; set; }
         private List<News> newses = new List<News>();
         private List<NewsMails> newsMails = new List<NewsMails>();
 
         public void Add(News news)
         {
+            CountNews++;
             newses.Add(news);
         }
 
@@ -24,6 +27,7 @@ namespace Core.SpecialClasses
 
         public void Add(NewsMails newsMails)
         {
+            CountNewsMails++;
             this.newsMails.Add(newsMails);
         }
 
@@ -44,6 +48,21 @@ namespace Core.SpecialClasses
                 if (x.IdMail == y.IdMail && x.IdNews == y.IdNews)
                     return 0;
                 return -1;
+            }
+        }
+
+        public NewsMails this[int index]
+        {
+            get
+            {
+                if (index >= 0 && index < newsMails.Count)
+                    return newsMails[index];
+                return null;
+            }
+            set
+            {
+                if (index >= 0 && index < newsMails.Count)
+                    newsMails[index] = value;
             }
         }
 

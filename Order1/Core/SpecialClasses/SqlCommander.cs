@@ -1,21 +1,31 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using Npgsql;
+using Core.Loading;
+using Order1.Forms;
 
 namespace Core.SpecialClasses
 {
-    static class SqlCommander
+    class SqlCommander
     {
         /*
          *Попробовать сделать так. Выгружать всю базу данных на компьютер, и уже здесь лопатить, 
          * и делать все проверки, и потом уже делать обычный insert по критериям. По другому не получиться ускорить.
          */
-        private static ListMails mails = new ListMails(false);
-        private static ListMails downloadedMails = new ListMails(true);
-        private static ListNews listNews = new ListNews();
 
-        public static int AddMails(NpgsqlConnection conn, List<string> mails, bool valid)
+
+        private ILoadingForm loadingForm;
+
+        private ListMails mails = new ListMails(false);
+        private ListMails downloadedMails = new ListMails(true);
+        private ListNews listNews = new ListNews();
+
+        public SqlCommander(ILoadingForm loadingForm)
+        {
+            this.loadingForm = loadingForm;
+        }
+
+        public int AddMails(NpgsqlConnection conn, List<string> mails, bool valid)
         {
             //Открываем соединение, если оно не открыто
             if (conn.State == System.Data.ConnectionState.Closed)
@@ -24,7 +34,7 @@ namespace Core.SpecialClasses
             int x = DownloadMails(conn);
             int counterCoinciding = 0; // количество совпадений адресов(переданных в метод и находящихся в БД)
             mails.ForEach(item => {
-                ListMails.Mail idMail = SqlCommander.mails.Exists(new ListMails.Mail(0, item, valid));
+                ListMails.Mail idMail = this.mails.Exists(new ListMails.Mail(0, item, valid));
                 if (idMail != null)
                 {
                     //Увеличиваем счетчик количества совпадений адресов
@@ -93,41 +103,18 @@ namespace Core.SpecialClasses
             return counterCoinciding;
         }
 
-        public static int AddMails(NpgsqlConnection conn, List<string> mails, bool valid, DateTime date, string news)
+        public int AddMails(NpgsqlConnection conn, List<string> mails, bool valid, DateTime date, string news)
         {
             int counterCoinciding = AddMails(conn, mails, valid);
             DownloadNews(conn);
             ListNews.News news1 = listNews.Find(news);
 
-            //for (int i = 0; i < SqlCommander.mails.Count; i++)
-            //{
-            //    ListNews.NewsMails newsMails = listNews.Find(SqlCommander.mails[i].Id, news1.Id);
-            //    if (newsMails != null && newsMails.DateTime < date)
-            //    {
-            //        string sqlQuery = "UPDATE mails_news SET mailing_date = " + date.ToString() + " WHERE id_relation = " + newsMails.IdRel + ";";
-            //        var conn2 = new NpgsqlConnection(conn.ConnectionString);
-            //        conn2.Open();
-            //        _ = new NpgsqlCommand(sqlQuery, conn2).ExecuteNonQuery();
-            //        conn2.Close();
-            //    }
-            //}
-
-            //for (int i = 0; i < downloadedMails.Count; i++)
-            //{
-            //    string getNextValQuery = "SELECT NEXTVAL('s_mail_news');";
-            //    var conn2 = new NpgsqlConnection(conn.ConnectionString);
-            //    conn2.Open();
-            //    int nextVal = (int)new NpgsqlCommand(getNextValQuery, conn2).ExecuteScalar();
-            //    string sqlInsertQuery = "INSERT INTO mails_news VALUES " + ";";
-            //    conn.Close();
-            //}
-
-            Console.WriteLine(SqlCommander.mails.mails.Count + "  SqlCommander.mails.mails.");
+            Console.WriteLine(this.mails.mails.Count + "  SqlCommander.mails.mails.");
             string sqlInsertQuery = "INSERT INTO mails_news VALUES\n";
             string dateTimeString = date.Date.Day + "-" + date.Date.Month + "-" + date.Date.Year;
             bool relationWasAdd = false;
             //Анализ адресов которые уже были в базе
-            SqlCommander.mails.mails.ForEach(item =>
+            this.mails.mails.ForEach(item =>
             {
                 ListNews.NewsMails newsMails = listNews.Find(item.Id, news1.Id);
                 if (newsMails != null && newsMails.DateTime < date)
@@ -171,23 +158,9 @@ namespace Core.SpecialClasses
             return counterCoinciding;
         }
 
-        private static int FindIdMailByName(NpgsqlConnection conn, string newsName)
+        private void DownloadNews(NpgsqlConnection conn)
         {
-            return (int)new NpgsqlCommand("SELECT id_news FROM news WHERE news_name = " + newsName + ";", conn).ExecuteScalar();
-        }
-
-        private static int? IsMailExists(NpgsqlConnection conn, string mail)
-        {
-            Console.WriteLine("SELECT id_mail FROM e_mails WHERE mail = " + mail + ";");
-            var command = new NpgsqlCommand("SELECT id_mail FROM e_mails WHERE mail = '" + mail + "';", conn);
-            int? result = -1;
-            result = (int)command.ExecuteScalar();
-
-            return result;
-        }
-
-        private static void DownloadNews(NpgsqlConnection conn)
-        {
+            loadingForm.ChangeProcessName("Получение списка новостей из Базы данных...");
             var connection = new NpgsqlConnection(conn.ConnectionString);
             connection.Open();
             string sqlCommand = "SELECT * FROM mails_news;";
@@ -198,6 +171,7 @@ namespace Core.SpecialClasses
                                                     (int)commandResult[1],
                                                     (int)commandResult[2],
                                                     (DateTime)commandResult[3]));
+                //loadingForm.AddMessage(listNews[listNews.CountNewsMails - 1].ToString());
             }
             var connection2 = new NpgsqlConnection(conn.ConnectionString);
             connection2.Open();
@@ -211,8 +185,9 @@ namespace Core.SpecialClasses
             connection2.Close();
         }
 
-        private static int DownloadMails(NpgsqlConnection conn)
+        private int DownloadMails(NpgsqlConnection conn)
         {
+            loadingForm.ChangeProcessName("Получение существующих адресов...");
             var connection = new NpgsqlConnection(conn.ConnectionString);
             connection.Open();
             string sqlCommand = "SELECT * FROM e_mails";
@@ -221,13 +196,14 @@ namespace Core.SpecialClasses
             while (rows.Read())
             {
                 mails.Add(new ListMails.Mail((int)rows[0], (string)rows[1], (bool)rows[2]));
+                //loadingForm.AddMessage(mails[mails.Count - 1].ToString());
                 Console.WriteLine(mails[mails.Count - 1]);
             }
             connection.Close();
             return mails.Count;
         }
 
-        public static void DeleteAll()
+        public void DeleteAll()
         {
             mails.DeleteAll();
             downloadedMails.DeleteAll();
