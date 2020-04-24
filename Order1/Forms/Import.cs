@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using Npgsql;
 using Core.SpecialClasses;
 using NpgsqlTypes;
+using Order1.Forms;
 
 namespace Order1
 {
@@ -150,102 +151,39 @@ namespace Order1
             }
         }
 
-        private int AddMailToDatabase(NpgsqlConnection conn, bool validState, string[] mail, DateTime date, string newsName)
-        {
-            //Создание команды для запроса в БД
-            var command = new NpgsqlCommand("import_mails", conn);
-            command.CommandType = CommandType.StoredProcedure;
-
-            //Создание параметров для запроса
-            var valid = command.CreateParameter();
-            //Название в функции в БД
-            valid.ParameterName = "valid_state";
-            //Тип параметра для БД
-            valid.DbType = DbType.Boolean;
-            //Значение параметра
-            valid.Value = validState;
-
-            var mailParam = command.CreateParameter();
-            mailParam.ParameterName = "mail_add";
-            mailParam.NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.Text;
-            mailParam.NpgsqlValue = mail;
-
-            var dateParam = command.CreateParameter();
-            dateParam.ParameterName = "mail_date";
-            dateParam.DbType = DbType.Date;
-            dateParam.Value = date;
-
-            var newsParam = command.CreateParameter();
-            newsParam.ParameterName = "name_news";
-            newsParam.DbType = DbType.String;
-            newsParam.Value = newsName;
-
-            //Добавление параметров в запрос
-            command.Parameters.Add(valid);
-            command.Parameters.Add(mailParam);
-            command.Parameters.Add(dateParam);
-            command.Parameters.Add(newsParam);
-            return (int)command.ExecuteScalar();
-        }
-        private int AddMailToDatabase(NpgsqlConnection conn, bool validState, string[] mail)
-        {
-            //Создание команды для запроса в БД
-            var command = new NpgsqlCommand("import_mails", conn);
-            command.CommandType = CommandType.StoredProcedure;
-
-            //Создание параметров для запроса
-            var valid = command.CreateParameter();
-            //Название в функции в БД
-            valid.ParameterName = "valid_state";
-            //Тип параметра для БД
-            valid.DbType = DbType.Boolean;
-            //Значение параметра
-            valid.Value = validState;
-
-            var mailParam = command.CreateParameter();
-            mailParam.ParameterName = "mail_add";
-            mailParam.NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.Text;
-            mailParam.NpgsqlValue = mail;
-
-            //Добавление параметров в запрос
-            command.Parameters.Add(valid);
-            command.Parameters.Add(mailParam);
-            return (int)command.ExecuteScalar();
-        }
-
         private void Button1_Click(object sender, EventArgs e)
         {
             if (valid && isFileSelected && isNewsSelected && isDateSelected ||
                 (!valid && isFileSelected && isNewsSelected && isDateSelected))
             {
+                LoadingProcessForm processForm = new LoadingProcessForm();
+                processForm.Show();
                 Task.Factory.StartNew(() =>
                 {
                     List<string> mails = FileWorker.ReadFromFile(pathFile);
-                    int amountCoincidences = SqlCommander.AddMails(new NpgsqlConnection(connectionString), mails, valid, SelectedDate, selectedNews);
+                    SqlCommander commander = new SqlCommander(processForm);
+                    int amountCoincidences = commander.AddMails(new NpgsqlConnection(connectionString), mails, valid, SelectedDate, selectedNews);
                     conn.Close();
-                    SqlCommander.DeleteAll();
+                    commander.DeleteAll();
                     MessageBox.Show("Импортировано " + mails.Count + " строк\n\n" + amountCoincidences.ToString() + " совпадений найдено.");
                 });
             }
 
             else if (!valid && isFileSelected && (!isNewsSelected && !isDateSelected))
             {
+                LoadingProcessForm processForm = new LoadingProcessForm();
+                processForm.Show();
                 Task.Factory.StartNew(() =>
                 {
                     NpgsqlConnection conn = new NpgsqlConnection(connectionString);
                     List<string> mails = FileWorker.ReadFromFile(pathFile);
-                    int amountCoincidences = SqlCommander.AddMails(conn, mails, valid);
+                    SqlCommander commander = new SqlCommander(processForm);
+                    int amountCoincidences = commander.AddMails(conn, mails, valid);
                     conn.Close();
-                    SqlCommander.DeleteAll();
+                    commander.DeleteAll();
                     MessageBox.Show("Импортировано " + mails.Count + " строк\n\n" + amountCoincidences.ToString() + " совпадений найдено.");
                 });
             }
-            //List<string> mails = FileWorker.ReadFromFile(pathFile);
-            //SqlCommander.DownloadMails(new NpgsqlConnection(connectionString));
-            //using (var conn = new NpgsqlConnection(connectionString))
-            //{
-            //    SqlCommander.AddMails(conn, mails.ToArray(), valid);
-            //}
             else
             {
                 MessageBox.Show("НЕ ВСЕ ПОЛЯ ЗАПОЛНЕНЫ!\nПОЖАЛУЙСТА, ПРОВЕРЬТЕ ПРАВИЛЬНОСТЬ ВВЕДЕННЫХ ДАННЫХ",
